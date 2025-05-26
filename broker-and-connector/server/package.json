@@ -1,0 +1,29 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Server for MQTT broker and database connector web application",
+  "main": "server.js",
+  "devDependencies": {},
+  "scripts": {
+    "development": "nodemon server.js",
+    "production": "node server.js"
+  },
+  "keywords": [
+    "MQTT",
+    "broker",
+    "connector"
+  ],
+  "author": "Martin Hingyi",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "aedes": "^0.51.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.15.1",
+    "mssql": "^11.0.1",
+    "nodemon": "^3.1.10",
+    "pg": "^8.16.0"
+  }
+}
