@@ -48,7 +48,7 @@ broker.on('publish', (packet, client) => {
 const server = net.createServer(broker.handle);
 
 server.listen(process.env.MQTT_PORT || 1883, () => {
-  console.log(`MQTT broker running on port ${process.env.MQTT_PORT || 1883}`);
+  console.log(`MQTT broker running on port: ${process.env.MQTT_PORT || 1883}`);
 });
 
 // Export the broker and server to use their data in other modules
