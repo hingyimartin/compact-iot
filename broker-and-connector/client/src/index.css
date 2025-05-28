@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes toast-progress-animation {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+@keyframes toast-progress-animation2 {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}

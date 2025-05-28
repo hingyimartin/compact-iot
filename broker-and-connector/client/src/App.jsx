@@ -1,10 +1,13 @@
 import { Outlet } from 'react-router-dom';
+import { ToastProvider } from './contexts/ToastContext';
 
 const App = () => {
   return (
-    <div>
-      <Outlet />
-    </div>
+    <ToastProvider>
+      <div>
+        <Outlet />
+      </div>
+    </ToastProvider>
   );
 };
 
