@@ -108,7 +108,7 @@ const Toast = ({ id, message, type, duration = 3000, onClose }) => {
         <div
           className={`h-full ${getProgressBarBackground()} rounded-b-lg origin-left`}
           style={{
-            animation: `toast-progress-animation2 ${duration}ms linear forwards`,
+            animation: `toast-progress-animation ${duration}ms linear forwards`,
           }}
         />
       </div>
