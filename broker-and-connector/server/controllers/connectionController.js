@@ -20,6 +20,6 @@ export const createConnection = async (request, response) => {
     delete newConnection.password;
     response.status(201).json(newConnection);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    response.status(500).json({ message: error.message });
   }
 };

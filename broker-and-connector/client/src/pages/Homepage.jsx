@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Server,
@@ -26,7 +26,7 @@ const Homepage = () => {
 
   const lockInBroker = () => {
     if (!formData.host || !formData.port || !formData.topic) {
-      addToast('All fields are required!', 'error', 3000, 'top-right');
+      addToast('All fields are required!', 'error');
       return;
     }
     setDisplayBrokerOverview(true);
@@ -43,7 +43,7 @@ const Homepage = () => {
       !formData.username ||
       !formData.password
     ) {
-      addToast('All fields are required!', 'error', 3000, 'top-right');
+      addToast('All fields are required!', 'error');
       return;
     }
     setDisplayConnectorOverview(true);
@@ -106,6 +106,51 @@ const Homepage = () => {
       setDbType(e.target.value);
     }
   };
+
+  const createConnection = async () => {
+    console.log(formData);
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/connections`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            host: formData.host,
+            port: parseInt(formData.port, 10),
+            topic: formData.topic,
+            type: formData.database,
+            database: formData.databaseName,
+            username: formData.username,
+            password: formData.password,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Unexpected error!');
+      }
+      addToast('Connection created!', 'success');
+      setCreateAnimationKey((prev) => prev + 1);
+      setConnectorOverviewAnimationKey(0);
+      setAnimationKey(0);
+      setDisplayBrokerOverview(false);
+      setDisplayConnectorOverview(false);
+      setFormData({
+        host: '',
+        port: '',
+        topic: '',
+        database: '',
+        databaseName: '',
+        username: '',
+        password: '',
+      });
+    } catch (error) {
+      addToast(`${error.message || 'Unexpected error!'}`, 'error');
+    }
+  };
+
   return (
     <div className='flex flex-col gap-10'>
       {/* Upper broker and connector part */}
@@ -388,6 +433,7 @@ const Homepage = () => {
                   Start again
                 </button>
                 <button
+                  onClick={createConnection}
                   aria-label='create'
                   className='uppercase bg-primary text-white py-2 rounded hover:bg-accent text-lg w-1/6'
                 >
