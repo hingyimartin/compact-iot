@@ -9,12 +9,18 @@ import {
   Cable,
   User,
   KeyRound,
+  ArrowBigLeft,
 } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 
 const Homepage = () => {
   const [animationKey, setAnimationKey] = useState(0);
-  const [displayConnectors, setDisplayConnectors] = useState(false);
+  const [connectorOverviewAnimationKey, setConnectorOverviewAnimationKey] =
+    useState(0);
+  const [createAnimationKey, setCreateAnimationKey] = useState(0);
+  const [displayBrokerOverview, setDisplayBrokerOverview] = useState(false);
+  const [displayConnectorOverview, setDisplayConnectorOverview] =
+    useState(false);
   const { addToast } = useToast();
   const [dbType, setDbType] = useState('');
 
@@ -23,23 +29,62 @@ const Homepage = () => {
       addToast('All fields are required!', 'error', 3000, 'top-right');
       return;
     }
-    setDisplayConnectors(true);
+    setDisplayBrokerOverview(true);
     setAnimationKey((prev) => prev + 1);
   };
 
-  const createConnection = () => {};
+  const lockInConnector = () => {
+    if (
+      !formData.host ||
+      !formData.port ||
+      !formData.topic ||
+      !formData.database ||
+      !formData.databaseName ||
+      !formData.username ||
+      !formData.password
+    ) {
+      addToast('All fields are required!', 'error', 3000, 'top-right');
+      return;
+    }
+    setDisplayConnectorOverview(true);
+    setConnectorOverviewAnimationKey((prev) => prev + 1);
+  };
 
-  const resetProgress = () => {
-    setDisplayConnectors(false);
-    setAnimationKey(0);
-    setFormData({
-      host: '',
-      port: '',
-      topic: '',
-      database: '',
-      databaseName: '',
-      user: '',
-    });
+  // three parameters: [1 - reset from connector state], [2 - reset from overview], [3 - reset whole process]
+  const resetProgress = (state) => {
+    if (state === 1) {
+      setDisplayBrokerOverview(false);
+      setAnimationKey(0);
+      setFormData((prev) => ({
+        ...prev,
+        database: '',
+        databaseName: '',
+        username: '',
+        password: '',
+      }));
+    }
+    if (state === 2) {
+      setDisplayConnectorOverview(false);
+      setConnectorOverviewAnimationKey(0);
+    }
+
+    if (state === 3) {
+      setCreateAnimationKey((prev) => prev + 1);
+      setConnectorOverviewAnimationKey(0);
+      setAnimationKey(0);
+      setDisplayBrokerOverview(false);
+      setDisplayConnectorOverview(false);
+
+      setFormData({
+        host: '',
+        port: '',
+        topic: '',
+        database: '',
+        databaseName: '',
+        username: '',
+        password: '',
+      });
+    }
   };
   const [formData, setFormData] = useState({
     host: '',
@@ -47,7 +92,8 @@ const Homepage = () => {
     topic: '',
     database: '',
     databaseName: '',
-    user: '',
+    username: '',
+    password: '',
   });
 
   const updateFormData = (e) => {
@@ -67,15 +113,15 @@ const Homepage = () => {
         {/* MQTT */}
         <div
           className={`w-1/2 flex flex-col gap-10 ${
-            displayConnectors && 'opacity-40 pointer-events-none'
+            displayBrokerOverview && 'opacity-40 pointer-events-none'
           }`}
         >
           <h1 className='text-2xl font-bold'>Connect to broker</h1>
           <div className='border border-secondary p-10 rounded flex flex-col gap-10'>
             <div className='flex flex-col'>
               <label
-                className='text-lg uppercase font-semibold flex items-center gap-2'
                 htmlFor='host'
+                className='text-lg uppercase font-semibold flex items-center gap-2'
               >
                 <span>
                   <Server className='text-primary' />
@@ -85,6 +131,8 @@ const Homepage = () => {
               <input
                 type='text'
                 name='host'
+                aria-label='host'
+                id='host'
                 value={formData.host}
                 onChange={updateFormData}
                 className='border-b-2 border-secondary bg-background focus:outline-none focus:border-b-2 focus:border-primary py-2 text-text/80'
@@ -92,8 +140,8 @@ const Homepage = () => {
             </div>
             <div className='flex flex-col'>
               <label
-                className='text-lg uppercase font-semibold flex items-center gap-2'
                 htmlFor='port'
+                className='text-lg uppercase font-semibold flex items-center gap-2'
               >
                 <span>
                   <ChevronsLeftRightEllipsis className='text-primary' />
@@ -101,8 +149,10 @@ const Homepage = () => {
                 Port
               </label>
               <input
+                id='port'
                 type='text'
                 name='port'
+                aria-label='port'
                 value={formData.port}
                 onChange={updateFormData}
                 className='border-b-2 border-secondary bg-background focus:outline-none focus:border-b-2 focus:border-primary py-2 text-text/80'
@@ -110,8 +160,8 @@ const Homepage = () => {
             </div>
             <div className='flex flex-col'>
               <label
-                className='text-lg uppercase font-semibold flex items-center gap-2'
                 htmlFor='topic'
+                className='text-lg uppercase font-semibold flex items-center gap-2'
               >
                 <span>
                   <MessageSquareText className='text-primary' />
@@ -119,8 +169,10 @@ const Homepage = () => {
                 Topic
               </label>
               <input
+                id='topic'
                 type='text'
                 name='topic'
+                aria-label='topic'
                 value={formData.topic}
                 onChange={updateFormData}
                 className='border-b-2 border-secondary bg-background focus:outline-none focus:border-b-2 focus:border-primary py-2 text-text/80'
@@ -128,6 +180,7 @@ const Homepage = () => {
             </div>
             <button
               onClick={lockInBroker}
+              aria-label='lock_in_broker'
               className='uppercase bg-primary text-white py-2 rounded hover:bg-accent text-lg'
             >
               Lock in
@@ -135,12 +188,16 @@ const Homepage = () => {
           </div>
         </div>
         {/* Connector */}
-        <div className='w-1/2 flex flex-col gap-10'>
+        <div
+          className={`w-1/2 flex flex-col gap-10 ${
+            displayConnectorOverview && 'opacity-40 pointer-events-none'
+          }`}
+        >
           <AnimatePresence>
-            {displayConnectors && (
+            {displayBrokerOverview && (
               <>
                 <motion.h1
-                  key={animationKey}
+                  key={`connector-title-${animationKey}`}
                   initial={{ x: 100, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -149,16 +206,17 @@ const Homepage = () => {
                 >
                   Select a connector
                   <button
-                    onClick={resetProgress}
+                    aria-label='back_connector'
+                    onClick={() => resetProgress(1)}
                     className='bg-secondary text-text py-1 rounded px-2 flex items-center gap-2 text-sm'
                   >
-                    <RotateCcw className='w-4 h-4' />
-                    Start again
+                    <ArrowBigLeft className='w-4 h-4' />
+                    Back
                   </button>
                 </motion.h1>
 
                 <motion.div
-                  key={animationKey}
+                  key={`connector-panel-${animationKey}`}
                   initial={{ x: 100, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -166,10 +224,7 @@ const Homepage = () => {
                   className='border border-secondary p-10 rounded flex flex-col gap-10'
                 >
                   <div className='flex flex-col'>
-                    <label
-                      className='text-lg uppercase font-semibold flex items-center gap-2'
-                      htmlFor='database'
-                    >
+                    <label className='text-lg uppercase font-semibold flex items-center gap-2'>
                       <span>
                         <Cable className='text-primary' />
                       </span>
@@ -237,7 +292,7 @@ const Homepage = () => {
                       Password
                     </label>
                     <input
-                      type='text'
+                      type='password'
                       name='password'
                       value={formData.password}
                       onChange={updateFormData}
@@ -245,10 +300,11 @@ const Homepage = () => {
                     />
                   </div>
                   <button
-                    onClick={createConnection}
+                    onClick={lockInConnector}
+                    aria-label='lock_in_connector'
                     className='uppercase bg-primary text-white py-2 rounded hover:bg-accent text-lg'
                   >
-                    Create
+                    Lock in
                   </button>
                 </motion.div>
               </>
@@ -259,21 +315,29 @@ const Homepage = () => {
       {/* Lower overview */}
       <div>
         <AnimatePresence>
-          {displayConnectors && (
+          {displayBrokerOverview && (
             <>
               <motion.h1
-                key={animationKey}
+                key={`overview-title-${animationKey}`}
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
                 exit={{ y: -100, opacity: 0 }}
-                className='text-2xl font-bold mb-6 border-b border-secondary pb-2'
+                className='text-2xl font-bold mb-6 border-b border-secondary pb-2 flex items-center gap-3'
               >
-                Overview
+                Overview{' '}
+                <button
+                  aria-label='back_overview'
+                  onClick={() => resetProgress(2)}
+                  className='bg-secondary text-text py-1 rounded px-2 flex items-center gap-2 text-sm'
+                >
+                  <ArrowBigLeft className='w-4 h-4' />
+                  Back
+                </button>
               </motion.h1>
-              <div className='grid grid-cols-3 gap-6'>
+              <div className='grid grid-cols-3 gap-6 mb-6'>
                 <motion.div
-                  key={animationKey}
+                  key={`broker-details-${animationKey}`}
                   initial={{ x: -100, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -281,23 +345,54 @@ const Homepage = () => {
                   className='border border-secondary rounded p-6'
                 >
                   <h1 className='mb-6'>Broker</h1>
-                  <div className=''>
+                  <div>
                     <h1>HOST: {formData.host}</h1>
                     <h1>PORT: {formData.port}</h1>
                     <h1>TOPIC: {formData.topic}</h1>
                   </div>
                 </motion.div>
-                <motion.div
-                  key={animationKey}
-                  initial={{ x: -100, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ duration: 0.8, ease: 'easeOut' }}
-                  exit={{ x: -100, opacity: 0 }}
-                  className='border border-secondary rounded p-6'
-                >
-                  tr
-                </motion.div>
+                {displayConnectorOverview && (
+                  <motion.div
+                    key={`connector-details-${connectorOverviewAnimationKey}`}
+                    initial={{ y: 100, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, ease: 'easeOut' }}
+                    exit={{ y: 100, opacity: 0 }}
+                    className='border border-secondary rounded p-6'
+                  >
+                    <h1 className='mb-6'>Connector</h1>
+                    <div>
+                      <h1>DATABASE: {formData.database}</h1>
+                      <h1>DATABASE NAME: {formData.databaseName}</h1>
+                      <h1>USERNAME: {formData.username}</h1>
+                      <h1>PASSWORD: {formData.password}</h1>
+                    </div>
+                  </motion.div>
+                )}
               </div>
+              <motion.div
+                key={`create-${createAnimationKey}`}
+                initial={{ x: -100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                exit={{ x: -100, opacity: 0 }}
+                className='flex items-center gap-4'
+              >
+                <button
+                  aria-label='start_again'
+                  onClick={() => resetProgress(3)}
+                  className='uppercase bg-secondary text-text py-2 rounded text-lg w-1/6 flex items-center justify-center gap-2'
+                >
+                  <RotateCcw className='w-4 h-4' />
+                  Start again
+                </button>
+                <button
+                  aria-label='create'
+                  className='uppercase bg-primary text-white py-2 rounded hover:bg-accent text-lg w-1/6'
+                >
+                  Create
+                </button>
+              </motion.div>
             </>
           )}
         </AnimatePresence>
