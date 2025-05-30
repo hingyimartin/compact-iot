@@ -5,7 +5,8 @@ const Navbar = () => {
   const active = location.pathname;
   return (
     <div className='mb-10 flex items-center gap-20'>
-      <h1
+      <Link
+        to='/'
         className={`nav-link ${
           active === '/'
             ? 'border-b-2 border-primary'
@@ -13,8 +14,9 @@ const Navbar = () => {
         }`}
       >
         Homepage
-      </h1>
-      <h1
+      </Link>
+      <Link
+        to='/connections'
         className={`nav-link ${
           active === '/connections'
             ? 'border-b-2 border-primary'
@@ -22,8 +24,8 @@ const Navbar = () => {
         }`}
       >
         Connections
-      </h1>
-      <h1
+      </Link>
+      <Link
         className={`nav-link ${
           active === '/clients'
             ? 'border-b-2 border-primary'
@@ -31,7 +33,7 @@ const Navbar = () => {
         }`}
       >
         Clients
-      </h1>
+      </Link>
     </div>
   );
 };
