@@ -16,7 +16,9 @@ export const createConnection = async (request, response) => {
       password: hashedPassword,
     });
     await connection.save();
-    response.status(201).json(connection);
+    const newConnection = connection.toObject();
+    delete newConnection.password;
+    response.status(201).json(newConnection);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
