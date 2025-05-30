@@ -1,5 +1,6 @@
 import Connection from '../models/connectionModel.js';
 import bcrypt from 'bcrypt';
+import { createSubscriber } from './mqttController.js';
 
 export const getConnections = async (request, response) => {
   try {
@@ -27,6 +28,18 @@ export const createConnection = async (request, response) => {
     await connection.save();
     const newConnection = connection.toObject();
     delete newConnection.password;
+
+    createSubscriber({
+      host,
+      port,
+      topic,
+      id: newConnection._id.toString(),
+      type,
+      database,
+      username,
+      password,
+    });
+
     response.status(201).json(newConnection);
   } catch (error) {
     response.status(500).json({ message: error.message });

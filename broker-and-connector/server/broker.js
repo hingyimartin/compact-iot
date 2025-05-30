@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Win cmd command to check if broker listens on port: netstat -an | findstr 1883
+
 // TODO: Create authentication and authorization functions
 const broker = aedes({
   id: 'local-broker',
@@ -37,11 +39,11 @@ broker.on('subscribe', (subscriptions, client) => {
 
 broker.on('publish', (packet, client) => {
   if (client) {
-    console.log(
+    /*console.log(
       `Message from client ${client.id}: topic=${
         packet.topic
       } payload=${packet.payload.toString()}`
-    );
+    );*/
   }
 });
 
