@@ -344,11 +344,12 @@ const Homepage = () => {
                   exit={{ x: -100, opacity: 0 }}
                   className='border border-secondary rounded p-6'
                 >
-                  <h1 className='mb-6'>Broker</h1>
-                  <div>
+                  <h1 className='mb-6 text-lg'>Broker</h1>
+                  <div className='text-text/70'>
                     <h1>HOST: {formData.host}</h1>
                     <h1>PORT: {formData.port}</h1>
                     <h1>TOPIC: {formData.topic}</h1>
+                    <h1>&nbsp;</h1>
                   </div>
                 </motion.div>
                 {displayConnectorOverview && (
@@ -360,10 +361,10 @@ const Homepage = () => {
                     exit={{ y: 100, opacity: 0 }}
                     className='border border-secondary rounded p-6'
                   >
-                    <h1 className='mb-6'>Connector</h1>
-                    <div>
-                      <h1>DATABASE: {formData.database}</h1>
-                      <h1>DATABASE NAME: {formData.databaseName}</h1>
+                    <h1 className='mb-6 text-lg'>Connector</h1>
+                    <div className='text-text/70'>
+                      <h1>TYPE: {formData.database}</h1>
+                      <h1>DATABASE: {formData.databaseName}</h1>
                       <h1>USERNAME: {formData.username}</h1>
                       <h1>PASSWORD: {formData.password}</h1>
                     </div>
