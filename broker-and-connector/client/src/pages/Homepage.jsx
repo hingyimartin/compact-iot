@@ -171,7 +171,7 @@ const Homepage = () => {
                 <span>
                   <Server className='text-primary' />
                 </span>
-                Host
+                Host<span className='text-text/50'>(localhost, 127.0.0.1)</span>
               </label>
               <input
                 type='text'
@@ -192,6 +192,7 @@ const Homepage = () => {
                   <ChevronsLeftRightEllipsis className='text-primary' />
                 </span>
                 Port
+                <span className='text-text/50'>(1883, 1443, 5432)</span>
               </label>
               <input
                 id='port'
@@ -212,6 +213,7 @@ const Homepage = () => {
                   <MessageSquareText className='text-primary' />
                 </span>
                 Topic
+                <span className='text-text/50'>(.../.../...)</span>
               </label>
               <input
                 id='topic'

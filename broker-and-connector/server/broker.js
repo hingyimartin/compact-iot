@@ -23,34 +23,31 @@ const broker = aedes({
 
 // TODO: Logging events
 broker.on('client', (client) => {
-  console.log(`Client connected: ${client.id}`);
+  console.log(`[BROKER]: Client ${client.id} connected`);
 });
 
 broker.on('clientDisconnect', (client) => {
-  console.log(`Client disconnected: ${client.id}`);
+  console.log(`[BROKER]: Client ${client.id} disconnected`);
 });
 
 broker.on('subscribe', (subscriptions, client) => {
   console.log(
-    `Client ${client.id} subscribed to:`,
-    subscriptions.map((s) => s.topic)
+    `[BROKER]: Client ${client.id} subscribed (${subscriptions.map(
+      (s) => s.topic
+    )})`
   );
 });
 
 broker.on('publish', (packet, client) => {
   if (client) {
-    /*console.log(
-      `Message from client ${client.id}: topic=${
-        packet.topic
-      } payload=${packet.payload.toString()}`
-    );*/
+    `[BROKER]: Client ${client.id} published (${packet.payload.toString()})`;
   }
 });
 
 const server = net.createServer(broker.handle);
 
 server.listen(process.env.MQTT_PORT || 1883, () => {
-  console.log(`MQTT broker running on port: ${process.env.MQTT_PORT || 1883}`);
+  console.log(`[BROKER]: running on port: ${process.env.MQTT_PORT || 1883}`);
 });
 
 // Export the broker and server to use their data in other modules
